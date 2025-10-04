@@ -1,126 +1,124 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-// Estrutura que representa cada sala (nC3 da C!rvore)
-typedef struct Sala {
-	char nome[50];             // Nome da sala, como "Hall de Entrada" ou "Biblioteca"
-	struct Sala* esquerda;     // Ponteiro para a prC3xima sala C  esquerda (subC!rvore esquerda)
-	struct Sala* direita;      // Ponteiro para a prC3xima sala C  direita (subC!rvore direita)
+#include <stdio.h>	// Inclui a biblioteca padrão de entrada/saída (printf, scanf).
+#include <stdlib.h> // Inclui a biblioteca padrão (malloc, exit).
+#include <string.h> // Inclui a biblioteca para manipulação de strings (strcpy).
+// Estrutura que representa cada sala (nó da árvore)
+typedef struct Sala
+{
+	char nome[50];		   // Nome da sala, como "Hall de Entrada" ou "Biblioteca".
+	struct Sala *esquerda; // Ponteiro para a próxima sala à esquerda (subárvore esquerda).
+	struct Sala *direita;  // Ponteiro para a próxima sala à direita (subárvore direita).
 } Sala;
-
 /**
- * FunC'C#o: criarSala
+ * Função: criarSala
  * ------------------
- * Cria dinamicamente uma sala (nC3) com um nome.
- * Aloca a memC3ria necessC!ria, copia o nome para a estrutura e inicializa
- * os ponteiros 'esquerda' e 'direita' como NULL, indicando que a sala
- * ainda nC#o tem caminhos definidos.
+ * Cria dinamicamente uma sala (nó) com um nome.
+ * Aloca a memória necessária, copia o nome para a estrutura e inicializa
+ * os ponteiros 'esquerda' e 'direita' como NULL.
  */
-Sala* criarSala(const char* nome) {
-	Sala* nova = (Sala*) malloc(sizeof(Sala));
-	if (nova == NULL) {
-		printf("Erro ao alocar memC3ria!\n");
-		exit(1);
+Sala *criarSala(const char *nome)
+{
+	Sala *nova = (Sala *)malloc(sizeof(Sala)); // Aloca memória para a nova sala.
+	if (nova == NULL)
+	{ // Verifica se a alocação de memória falhou.
+		printf("Erro ao alocar memória!\n");
+		exit(1); // Encerra o programa com erro.
 	}
-	strcpy(nova->nome, nome);
-	nova->esquerda = NULL;
-	nova->direita = NULL;
-	return nova;
+	strcpy(nova->nome, nome); // Copia o nome fornecido para o campo 'nome' da struct.
+	nova->esquerda = NULL;	  // Inicializa o caminho da esquerda como nulo.
+	nova->direita = NULL;	  // Inicializa o caminho da direita como nulo.
+	return nova;			  // Retorna o ponteiro para a sala recém-criada.
 }
-
 /**
- * FunC'C#o: explorarSalas
+ * Função: explorarSalas
  * ---------------------
- * Permite ao jogador navegar interativamente pela mansC#o,
- * escolhendo os caminhos C  esquerda ou direita atC) chegar em um nC3-folha.
- * Usa um loop 'while' que continua enquanto houver salas para explorar.
+ * Permite ao jogador navegar interativamente pela mansão,
+ * escolhendo os caminhos à esquerda ou direita.
+ * O processo é iterativo, usando um loop 'while' até que a exploração termine.
  */
-void explorarSalas(Sala* atual) {
+void explorarSalas(Sala *atual)
+{
 	char escolha;
-
-	while (atual != NULL) {
-		printf("\nVocC* estC! em: %s\n", atual->nome);
-
-		// Caso seja um nC3-folha (sem caminhos), a exploraC'C#o termina aqui.
-		if (atual->esquerda == NULL && atual->direita == NULL) {
-			printf("VocC* chegou ao fim da exploraC'C#o! NC#o hC! mais caminhos.\n");
-			break;
+	while (atual != NULL)
+	{ // Continua a exploração enquanto o nó atual for válido.
+		printf("\nVocê está em: %s\n", atual->nome);
+		// Caso seja um nó-folha (sem caminhos), a exploração termina aqui.
+		if (atual->esquerda == NULL && atual->direita == NULL)
+		{
+			printf("Você chegou ao fim da exploração! Não há mais caminhos.\n");
+			break; // Sai do loop.
 		}
-
 		printf("Escolha um caminho: (e) esquerda, (d) direita, (s) sair: ");
+		// O espaço ' ' antes de %c ignora quaisquer espaços em branco e '\n' pendentes no buffer.
 		scanf(" %c", &escolha);
-
-		if (escolha == 'e' || escolha == 'E') {
-			if (atual->esquerda != NULL) {
-				// Se o caminho existe, o ponteiro 'atual' se move para a prC3xima sala C  esquerda.
+		if (escolha == 'e' || escolha == 'E')
+		{
+			if (atual->esquerda != NULL)
+			{
+				// Move-se para o nó da esquerda.
 				atual = atual->esquerda;
-			} else {
-				printf("NC#o hC! caminho C  esquerda!\n");
+			}
+			else
+			{
+				printf("Não há caminho à esquerda!\n");
 			}
 		}
-		else if (escolha == 'd' || escolha == 'D') {
-			if (atual->direita != NULL) {
-				// Se o caminho existe, o ponteiro 'atual' se move para a prC3xima sala C  direita.
+		else if (escolha == 'd' || escolha == 'D')
+		{
+			if (atual->direita != NULL)
+			{
+				// Move-se para o nó da direita.
 				atual = atual->direita;
-			} else {
-				printf("NC#o hC! caminho C  direita!\n");
+			}
+			else
+			{
+				printf("Não há caminho à direita!\n");
 			}
 		}
-		else if (escolha == 's' || escolha == 'S') {
-			printf("VocC* decidiu sair da exploraC'C#o.\n");
-			break;
+		else if (escolha == 's' || escolha == 'S')
+		{
+			printf("Você decidiu sair da exploração.\n");
+			break; // Sai do loop.
 		}
-		else {
-			printf("OpC'C#o invC!lida! Tente novamente.\n");
+		else
+		{
+			printf("Opção inválida! Tente novamente.\n");
 		}
 	}
 }
-
 /**
- * FunC'C#o: liberar
+ * Função: liberar
  * ---------------
- * Libera recursivamente toda a memC3ria da C!rvore, evitando vazamentos de memC3ria.
- * Ela visita primeiro os nC3s da esquerda, depois os da direita e, por fim, o nC3 atual.
- * Este C) um exemplo de percurso pC3s-ordem.
+ * Libera recursivamente toda a memória da árvore, evitando vazamentos de memória (Memory Leaks).
+ * É um percurso pós-ordem: libera os filhos antes de liberar o pai.
  */
-void liberar(Sala* raiz) {
-	if (raiz != NULL) {
-		liberar(raiz->esquerda);
-		liberar(raiz->direita);
-		free(raiz); // Libera o nC3 atual apC3s liberar seus "filhos"
+void liberar(Sala *raiz)
+{
+	if (raiz != NULL)
+	{
+		liberar(raiz->esquerda); // Chama recursivamente para a subárvore esquerda.
+		liberar(raiz->direita);	 // Chama recursivamente para a subárvore direita.
+		free(raiz);				 // Libera a memória do nó atual (pai).
 	}
 }
-
 /**
- * FunC'C#o Principal (main)
+ * Função Principal (main)
  * -----------------------
- * Monta manualmente o mapa da mansC#o (C!rvore binC!ria)
- * e inicia a exploraC'C#o pelo Hall de Entrada.
- * * A estrutura da C!rvore C) a seguinte:
- * * Hall de Entrada (raiz)
- * /                 \
- * Sala de Estar      Biblioteca
- * /      \                \
- * Cozinha  Jardim         Quarto
+ * Monta manualmente o mapa da mansão (árvore binária)
+ * e inicia a exploração.
  */
-int main() {
-	// ConstruC'C#o manual do mapa da mansC#o
-	Sala* hall = criarSala("Hall de Entrada");
+int main()
+{
+	// Construção manual do mapa da mansão, criando os nós e as ligações
+	Sala *hall = criarSala("Hall de Entrada"); // Cria a raiz da árvore.
 	hall->esquerda = criarSala("Sala de Estar");
 	hall->direita = criarSala("Biblioteca");
-
 	hall->esquerda->esquerda = criarSala("Cozinha");
-	hall->esquerda->direita = criarSala("Jardim");
-
-	hall->direita->direita = criarSala("Quarto");
-
-	// Inicia a exploraC'C#o
-	printf("=== Detective Quest: Explorando a MansC#o ===\n");
-	explorarSalas(hall);
-
-	// Libera memC3ria alocada, garantindo que o programa seja eficiente.
+	hall->esquerda->direita = criarSala("Jardim"); // Nó-folha.
+	hall->direita->direita = criarSala("Quarto");  // Nó-folha (Biblioteca tem caminho só para a direita).
+	// Inicia a exploração
+	printf("=== Detective Quest: Explorando a Mansão ===\n");
+	explorarSalas(hall); // Começa a exploração a partir da raiz ('hall').
+	// Libera memória alocada, garantindo que o programa seja eficiente.
 	liberar(hall);
-
 	return 0;
 }
