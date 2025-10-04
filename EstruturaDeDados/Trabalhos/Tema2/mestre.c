@@ -14,21 +14,47 @@ typedef struct {
     int quantidade;
 } Componente;
 
-// ------------------- FUNÇÕES PRINCIPAIS -------------------
+// ------------------- PROTÓTIPOS -------------------
+// Funções principais
 void adicionarComponente(Componente mochila[], int *qtd, int *ordenado);
 void descartarComponente(Componente mochila[], int *qtd, int *ordenado);
 void mostrarComponentes(Componente mochila[], int qtd);
 void organizarMochila(Componente mochila[], int qtd, int *ordenado);
 void buscarComponenteBinaria(Componente mochila[], int qtd, int ordenado);
+
+// Funções de ordenação
 void ordenarBubbleNome(Componente mochila[], int qtd, int *comparacoes);
 void ordenarInsertionTipo(Componente mochila[], int qtd, int *comparacoes);
 void ordenarSelectionPrioridade(Componente mochila[], int qtd, int *comparacoes);
+
+// Busca binária
 int buscaBinariaPorNome(Componente mochila[], int qtd, char nome[], int *comparacoes);
 
+// Funções auxiliares
+void toLowerCase(char *str);
+void printLinha(int wID, int wNome, int wTipo, int wPrioridade, int wQtd);
+
 // ------------------- FUNÇÕES AUXILIARES -------------------
+
+// Converte string para minúsculas (case-insensitive)
 void toLowerCase(char *str) {
     for (int i = 0; str[i]; i++)
         str[i] = tolower((unsigned char)str[i]);
+}
+
+// Imprime uma linha da tabela formatada
+void printLinha(int wID, int wNome, int wTipo, int wPrioridade, int wQtd) {
+    printf("+");
+    for (int i = 0; i < wID; i++) printf("-");
+    printf("+");
+    for (int i = 0; i < wNome; i++) printf("-");
+    printf("+");
+    for (int i = 0; i < wTipo; i++) printf("-");
+    printf("+");
+    for (int i = 0; i < wPrioridade; i++) printf("-");
+    printf("+");
+    for (int i = 0; i < wQtd; i++) printf("-");
+    printf("+\n");
 }
 
 // ------------------- MAIN -------------------
@@ -50,7 +76,7 @@ int main() {
         printf("0. Ativar torre de fuga\n");
         printf("Escolha a opcao: ");
         scanf("%d", &opcao);
-        getchar(); // limpar buffer
+        getchar(); // limpar buffer de entrada
 
         switch(opcao) {
             case 1:
@@ -79,9 +105,9 @@ int main() {
     return 0;
 }
 
-// ------------------- FUNÇÕES -------------------
+// ------------------- FUNÇÕES PRINCIPAIS -------------------
 
-// Adicionar componente
+// Adiciona um componente na mochila
 void adicionarComponente(Componente mochila[], int *qtd, int *ordenado) {
     if (*qtd >= MAX_COMPONENTES) {
         printf("Mochila cheia! Nao e possivel adicionar mais componentes.\n");
@@ -109,7 +135,7 @@ void adicionarComponente(Componente mochila[], int *qtd, int *ordenado) {
     printf("Componente adicionado com sucesso!\n");
 }
 
-// Descartar componente
+// Remove um componente pelo nome
 void descartarComponente(Componente mochila[], int *qtd, int *ordenado) {
     if (*qtd == 0) {
         printf("Mochila vazia! Nao ha componentes para descartar.\n");
@@ -131,11 +157,12 @@ void descartarComponente(Componente mochila[], int *qtd, int *ordenado) {
         toLowerCase(nomeComp);
 
         if (strcmp(nomeComp, nomeBusca) == 0) {
+            // desloca elementos para "fechar o buraco"
             for (int j = i; j < *qtd - 1; j++) {
                 mochila[j] = mochila[j + 1];
             }
             (*qtd)--;
-            *ordenado = 0; // alteração na lista
+            *ordenado = 0; // alteração na lista invalida ordenação
             printf("Componente descartado com sucesso!\n");
             return;
         }
@@ -143,7 +170,7 @@ void descartarComponente(Componente mochila[], int *qtd, int *ordenado) {
     printf("Componente nao encontrado!\n");
 }
 
-// Mostrar componentes com tabela bem formatada
+// Mostra os componentes em formato de tabela
 void mostrarComponentes(Componente mochila[], int qtd) {
     if (qtd == 0) {
         printf("Mochila vazia!\n");
@@ -153,30 +180,15 @@ void mostrarComponentes(Componente mochila[], int qtd) {
     // Largura de cada coluna
     int wID = 4, wNome = 25, wTipo = 15, wPrioridade = 10, wQtd = 10;
 
-    // Função para imprimir linha horizontal
-    void printLinha() {
-        printf("+");
-        for (int i = 0; i < wID; i++) printf("-");
-        printf("+");
-        for (int i = 0; i < wNome; i++) printf("-");
-        printf("+");
-        for (int i = 0; i < wTipo; i++) printf("-");
-        printf("+");
-        for (int i = 0; i < wPrioridade; i++) printf("-");
-        printf("+");
-        for (int i = 0; i < wQtd; i++) printf("-");
-        printf("+\n");
-    }
-
     // Cabeçalho
-    printLinha();
+    printLinha(wID, wNome, wTipo, wPrioridade, wQtd);
     printf("|%-*s|%-*s|%-*s|%-*s|%-*s|\n",
            wID, "ID",
            wNome, "NOME",
            wTipo, "TIPO",
            wPrioridade, "PRIORIDADE",
            wQtd, "QUANTIDADE");
-    printLinha();
+    printLinha(wID, wNome, wTipo, wPrioridade, wQtd);
 
     // Linhas de dados
     for (int i = 0; i < qtd; i++) {
@@ -188,10 +200,10 @@ void mostrarComponentes(Componente mochila[], int qtd) {
                wQtd, mochila[i].quantidade);
     }
 
-    printLinha();
+    printLinha(wID, wNome, wTipo, wPrioridade, wQtd);
 }
 
-// Organizar mochila (submenu de ordenacao)
+// Submenu de organização (escolhe o algoritmo de ordenação)
 void organizarMochila(Componente mochila[], int qtd, int *ordenado) {
     if (qtd == 0) {
         printf("Mochila vazia! Nao ha componentes para ordenar.\n");
@@ -215,7 +227,7 @@ void organizarMochila(Componente mochila[], int qtd, int *ordenado) {
             inicio = clock();
             ordenarBubbleNome(mochila, qtd, &comparacoes);
             fim = clock();
-            *ordenado = 1; // ordenada por nome
+            *ordenado = 1; // só Bubble Sort garante ordenação por NOME
             tempo = ((double)(fim - inicio)) / CLOCKS_PER_SEC;
             printf("Ordenacao por NOME realizada.\nComparacoes: %d | Tempo: %.6f s\n", comparacoes, tempo);
             break;
@@ -243,7 +255,7 @@ void organizarMochila(Componente mochila[], int qtd, int *ordenado) {
     mostrarComponentes(mochila, qtd);
 }
 
-// Buscar componente por nome (binaria)
+// Busca binária por nome (somente se ordenado por Bubble Sort)
 void buscarComponenteBinaria(Componente mochila[], int qtd, int ordenado) {
     if (qtd == 0) {
         printf("Mochila vazia!\n");
@@ -265,37 +277,22 @@ void buscarComponenteBinaria(Componente mochila[], int qtd, int ordenado) {
     if (indice != -1) {
         printf("Componente encontrado!\n");
 
-        // Mostrar resultado em tabela
         int wID = 4, wNome = 25, wTipo = 15, wPrioridade = 10, wQtd = 10;
-        void printLinha() {
-            printf("+");
-            for (int i = 0; i < wID; i++) printf("-");
-            printf("+");
-            for (int i = 0; i < wNome; i++) printf("-");
-            printf("+");
-            for (int i = 0; i < wTipo; i++) printf("-");
-            printf("+");
-            for (int i = 0; i < wPrioridade; i++) printf("-");
-            printf("+");
-            for (int i = 0; i < wQtd; i++) printf("-");
-            printf("+\n");
-        }
-
-        printLinha();
+        printLinha(wID, wNome, wTipo, wPrioridade, wQtd);
         printf("|%-*s|%-*s|%-*s|%-*s|%-*s|\n",
                wID, "ID",
                wNome, "NOME",
                wTipo, "TIPO",
                wPrioridade, "PRIORIDADE",
                wQtd, "QUANTIDADE");
-        printLinha();
+        printLinha(wID, wNome, wTipo, wPrioridade, wQtd);
         printf("|%-*d|%-*s|%-*s|%-*d|%-*d|\n",
                wID, indice+1,
                wNome, mochila[indice].nome,
                wTipo, mochila[indice].tipo,
                wPrioridade, mochila[indice].prioridade,
                wQtd, mochila[indice].quantidade);
-        printLinha();
+        printLinha(wID, wNome, wTipo, wPrioridade, wQtd);
     } else {
         printf("Componente nao encontrado.\n");
     }
@@ -303,6 +300,8 @@ void buscarComponenteBinaria(Componente mochila[], int qtd, int ordenado) {
 }
 
 // ------------------- ALGORITMOS DE ORDENACAO -------------------
+
+// Bubble Sort por nome
 void ordenarBubbleNome(Componente mochila[], int qtd, int *comparacoes) {
     Componente temp;
     *comparacoes = 0;
@@ -323,6 +322,7 @@ void ordenarBubbleNome(Componente mochila[], int qtd, int *comparacoes) {
     }
 }
 
+// Insertion Sort por tipo
 void ordenarInsertionTipo(Componente mochila[], int qtd, int *comparacoes) {
     Componente chave;
     int j;
@@ -350,6 +350,7 @@ void ordenarInsertionTipo(Componente mochila[], int qtd, int *comparacoes) {
     }
 }
 
+// Selection Sort por prioridade
 void ordenarSelectionPrioridade(Componente mochila[], int qtd, int *comparacoes) {
     int min_idx;
     Componente temp;
