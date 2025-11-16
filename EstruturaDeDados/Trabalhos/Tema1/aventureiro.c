@@ -2,6 +2,8 @@
 #include <stdlib.h> // Inclui a biblioteca padrão (calloc, free, rand, etc.)
 #include <string.h> // Inclui a biblioteca de manipulação de strings (strcspn, strcpy)
 #include <time.h>   // Inclui a biblioteca de tempo (necessária para a função srand)
+#include <locale.h> // Biblioteca principal
+#include <wchar.h>  // Para wide characters (opcional, mas recomendado para robustez)
 
 #define TAM_NOME 30 // Define o tamanho máximo para o nome do território
 #define TAM_COR 10  // Define o tamanho máximo para a cor do exército/jogador
@@ -142,6 +144,7 @@ void liberarMemoria(Territorio *mapa)
 int main()
 {
     // Inicializa o gerador de números aleatórios com o tempo atual para simulação de dados.
+    setlocale(LC_ALL, "pt_BR.UTF-8");
     srand(time(NULL));
     int totalTerritorios = 0;
     int maxTerritorios;
