@@ -2,13 +2,33 @@
 #include <stdlib.h> // Inclui a biblioteca padrão, crucial para alocação de memória (malloc, free) e exit.
 #include <string.h> // Inclui a biblioteca de strings, usada para manipulação de strings (strcmp, strlen, strncpy).
 #include <ctype.h> // Inclui a biblioteca para funções de caracteres (como tolower para ignorar caixa).
+#include <locale.h>
 
 #define TAMANHO_HASH 31 // Define o tamanho da Tabela Hash para Suspeitos/Pistas (tamanho primo).
 #define MAX_STR 100 // Define o tamanho máximo de caracteres para a maioria das strings de I/O.
 #define QUIT_FLAG 1 // Define um sinal de retorno para forçar a saída da recursão de navegação (opção 'q').
 #define TOTAL_COMODOS 10 // AGORA GLOBAL E DEFINIDO PELO PRÉ-PROCESSADOR
-/********************* ESTRUTURAS DE DADOS ************************/
 
+
+// Adiciona a API do Windows para mudar a página de código, nessa pré-compilação que vê se o windows 32bits
+// E decide se é essa biblioteca windows.h, pois o terminal muitas vezes ainda é do windows 32 para o mingw
+#ifdef _WIN32 
+#include <windows.h>
+#endif
+
+// Função que configura a codificação do console (específico para Windows)
+void set_utf8_console() {
+    // 1. Tenta configurar a localidade C padrão para UTF-8
+    setlocale(LC_ALL, "C.UTF-8");
+    
+    // 2. Se for Windows, força a página de código do console
+    #ifdef _WIN32
+        // 65001 é o identificador da página de código para UTF-8 no Windows
+        SetConsoleOutputCP(65001);
+    #endif
+}
+
+/********************* ESTRUTURAS DE DADOS ************************/
 typedef struct Comodo {
 	char nome[50]; // Nome do cômodo (ex: "Biblioteca").
 	struct Comodo* esquerda; // Ponteiro para o nó (cômodo) à esquerda (navegação na Árvore).
@@ -523,6 +543,7 @@ void agregarPontuacoesRecursivo(NoPista* raiz, PontuacaoSuspeito pontuacoes[], i
 /********************* PROGRAMA PRINCIPAL *************************/
 
 int main() {
+	set_utf8_console();
 	printf("=== Detective Quest: Coletor de Pistas (versao texto) ===\n\n");
 
 	// Montagem manual da árvore da mansão (representação do mapa).

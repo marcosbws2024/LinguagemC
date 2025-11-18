@@ -8,6 +8,24 @@
 #define TAM_NOME 30 // Define o tamanho máximo para o nome do território
 #define TAM_COR 10  // Define o tamanho máximo para a cor do exército/jogador
 
+
+// Adiciona a API do Windows para mudar a página de código
+#ifdef _WIN32 
+#include <windows.h>
+#endif
+
+// Função que configura a codificação do console (específico para Windows)
+void set_utf8_console() {
+    // 1. Tenta configurar a localidade C padrão para UTF-8
+    setlocale(LC_ALL, "C.UTF-8");
+    
+    // 2. Se for Windows, força a página de código do console
+    #ifdef _WIN32
+        // 65001 é o identificador da página de código para UTF-8 no Windows
+        SetConsoleOutputCP(65001);
+    #endif
+}
+
 // Definição da estrutura Territorio
 typedef struct
 {
@@ -144,7 +162,7 @@ void liberarMemoria(Territorio *mapa)
 int main()
 {
     // Inicializa o gerador de números aleatórios com o tempo atual para simulação de dados.
-    setlocale(LC_ALL, "pt_BR.UTF-8");
+    set_utf8_console();
     srand(time(NULL));
     int totalTerritorios = 0;
     int maxTerritorios;

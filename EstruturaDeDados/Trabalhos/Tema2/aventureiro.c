@@ -2,8 +2,28 @@
 #include <stdlib.h>  // Inclui a biblioteca padrão (funções gerais).
 #include <string.h>  // Inclui a biblioteca para manipulação de strings (strcmp, strcpy, strcspn).
 #include <ctype.h>   // Inclui a biblioteca para manipulação de caracteres (tolower).
+#include <locale.h>
+
 #define MAX_ITENS 10 // Define a capacidade máxima de itens que a mochila suporta.
 // Struct para representar cada item da mochila
+
+// Adiciona a API do Windows para mudar a página de código
+#ifdef _WIN32 
+#include <windows.h>
+#endif
+
+// Função que configura a codificação do console (específico para Windows)
+void set_utf8_console() {
+    // 1. Tenta configurar a localidade C padrão para UTF-8
+    setlocale(LC_ALL, "C.UTF-8");
+    
+    // 2. Se for Windows, força a página de código do console
+    #ifdef _WIN32
+        // 65001 é o identificador da página de código para UTF-8 no Windows
+        SetConsoleOutputCP(65001);
+    #endif
+}
+
 typedef struct
 {
     char nome[30];  // Nome do item.
@@ -30,6 +50,7 @@ int buscarBinaria(Item mochila[], int qtd, char nome[]);     // Implementa a bus
 // ------------------- MENU PRINCIPAL -------------------
 int main()
 {
+    set_utf8_console();
     Item mochila[MAX_ITENS]; // Cria o vetor principal (a mochila).
     int qtd = 0;             // Variável que conta a quantidade atual de itens (começa em 0).
     int opcao;               // Variável para a escolha do menu.

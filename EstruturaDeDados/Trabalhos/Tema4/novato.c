@@ -1,6 +1,26 @@
 #include <stdio.h>	// Inclui a biblioteca padrão de entrada/saída (printf, scanf).
 #include <stdlib.h> // Inclui a biblioteca padrão (malloc, exit).
 #include <string.h> // Inclui a biblioteca para manipulação de strings (strcpy).
+#include <locale.h>
+
+// Adiciona a API do Windows para mudar a página de código, nessa pré-compilação que vê se o windows 32bits
+// E decide se é essa biblioteca windows.h, pois o terminal muitas vezes ainda é do windows 32 para o mingw
+#ifdef _WIN32 
+#include <windows.h>
+#endif
+
+// Função que configura a codificação do console (específico para Windows)
+void set_utf8_console() {
+    // 1. Tenta configurar a localidade C padrão para UTF-8
+    setlocale(LC_ALL, "C.UTF-8");
+    
+    // 2. Se for Windows, força a página de código do console
+    #ifdef _WIN32
+        // 65001 é o identificador da página de código para UTF-8 no Windows
+        SetConsoleOutputCP(65001);
+    #endif
+}
+
 // Estrutura que representa cada sala (nó da árvore)
 typedef struct Sala
 {
@@ -108,6 +128,7 @@ void liberar(Sala *raiz)
  */
 int main()
 {
+	set_utf8_console();
 	// Construção manual do mapa da mansão, criando os nós e as ligações
 	Sala *hall = criarSala("Hall de Entrada"); // Cria a raiz da árvore.
 	hall->esquerda = criarSala("Sala de Estar");

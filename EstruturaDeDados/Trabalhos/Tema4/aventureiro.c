@@ -1,6 +1,25 @@
 #include <stdio.h>  // Inclui funções de entrada e saída (printf, scanf).
 #include <stdlib.h> // Inclui funções de alocação de memória (malloc, free, exit).
 #include <string.h> // Inclui funções de manipulação de strings (strcpy, strlen, strcmp).
+#include <locale.h>
+
+// Adiciona a API do Windows para mudar a página de código, nessa pré-compilação que vê se o windows 32bits
+// E decide se é essa biblioteca windows.h, pois o terminal muitas vezes ainda é do windows 32 para o mingw
+#ifdef _WIN32 
+#include <windows.h>
+#endif
+
+// Função que configura a codificação do console (específico para Windows)
+void set_utf8_console() {
+    // 1. Tenta configurar a localidade C padrão para UTF-8
+    setlocale(LC_ALL, "C.UTF-8");
+    
+    // 2. Se for Windows, força a página de código do console
+    #ifdef _WIN32
+        // 65001 é o identificador da página de código para UTF-8 no Windows
+        SetConsoleOutputCP(65001);
+    #endif
+}
 // ====================== Estrutura das Salas (Árvore Binária) ======================
 // Define a estrutura para cada sala da mansão (nó do mapa).
 typedef struct Sala
@@ -156,6 +175,7 @@ void liberarSalas(Sala *raiz)
 // ====================== Função principal ======================
 int main()
 {
+    set_utf8_console();
     // Construção manual do mapa da mansão (montando a Árvore Binária).
     Sala *hall = criarSala("Hall de Entrada", "Pegada de lama"); // Raiz.
     hall->esquerda = criarSala("Sala de Estar", "Chave perdida");
@@ -163,6 +183,7 @@ int main()
     hall->esquerda->esquerda = criarSala("Cozinha", "Copo quebrado");
     hall->esquerda->direita = criarSala("Jardim", "Portão aberto");
     hall->direita->direita = criarSala("Quarto", "Diário rasgado"); // Biblioteca aponta só para a direita.
+
     // Raiz da BST de pistas (começa vazia).
     PistaNode *pistas = NULL;
     // Inicia a exploração

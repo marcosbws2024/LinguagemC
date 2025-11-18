@@ -2,6 +2,26 @@
 #include <stdlib.h>  // Inclui a biblioteca padrão (malloc, free, etc.)
 #include <string.h>  // Inclui a biblioteca para manipulação de strings (strcmp, strcspn, etc.)
 #define MAX_ITENS 10 // Define a capacidade máxima de itens que a mochila pode armazenar.
+#include <locale.h>
+
+// Adiciona a API do Windows para mudar a página de código
+#ifdef _WIN32 
+#include <windows.h>
+#endif
+
+
+// Função que configura a codificação do console (específico para Windows)
+void set_utf8_console() {
+    // 1. Tenta configurar a localidade C padrão para UTF-8
+    setlocale(LC_ALL, "C.UTF-8");
+    
+    // 2. Se for Windows, força a página de código do console
+    #ifdef _WIN32
+        // 65001 é o identificador da página de código para UTF-8 no Windows
+        SetConsoleOutputCP(65001);
+    #endif
+}
+
 // Definição da struct Item: representa um objeto dentro da mochila.
 typedef struct
 {
@@ -16,6 +36,7 @@ void listarItens(Item mochila[], int qtd);  // Exibe todos os itens na mochila.
 void buscarItem(Item mochila[], int qtd);   // Procura e exibe um item específico pelo nome.
 int main()
 {
+    set_utf8_console();
     Item mochila[MAX_ITENS]; // Declara o vetor principal (a mochila) com a capacidade máxima.
     int qtd = 0;             // Variável que rastreia a quantidade ATUAL de itens na mochila (índice do próximo item).
     int opcao;

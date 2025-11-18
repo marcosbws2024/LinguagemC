@@ -2,9 +2,30 @@
 #include <stdlib.h>        // Inclui a biblioteca padrão (rand, srand).
 #include <time.h>          // Inclui para gerar semente aleatória baseada no tempo.
 #include <ctype.h>         // Inclui para manipulação de caracteres (não usado diretamente, mas bom para I/O).
+#include <locale.h>
+
 #define FILA_CAPACIDADE 5  // Define a capacidade máxima da Fila Circular.
 #define PILHA_CAPACIDADE 3 // Define a capacidade máxima da Pilha (reserva).
 // Estrutura base para representar uma peça.
+
+// Adiciona a API do Windows para mudar a página de código
+#ifdef _WIN32 
+#include <windows.h>
+#endif
+
+
+// Função que configura a codificação do console (específico para Windows)
+void set_utf8_console() {
+    // 1. Tenta configurar a localidade C padrão para UTF-8
+    setlocale(LC_ALL, "C.UTF-8");
+    
+    // 2. Se for Windows, força a página de código do console
+    #ifdef _WIN32
+        // 65001 é o identificador da página de código para UTF-8 no Windows
+        SetConsoleOutputCP(65001);
+    #endif
+}
+
 typedef struct
 {
     char nome; // Tipo da peça: I, O, T, L (identificação).
@@ -45,6 +66,7 @@ int lerOpcao();                                        // Função segura para l
 // ---------- Função Principal ----------
 int main()
 {
+    set_utf8_console();
     FilaCircular fila;        // Declara a fila de peças.
     Pilha pilha;              // Declara a pilha de reserva.
     int opcao;                // Variável para a escolha do menu.

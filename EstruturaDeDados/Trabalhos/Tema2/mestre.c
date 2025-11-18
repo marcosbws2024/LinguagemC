@@ -3,7 +3,29 @@
 #include <string.h>        // Biblioteca para manipulação de strings (strcmp, strcpy, strcspn).
 #include <ctype.h>         // Biblioteca para manipular caracteres (tolower).
 #include <time.h>          // Biblioteca para medir o tempo de execução (clock_t, clock()).
+#include <locale.h>
+
 #define MAX_COMPONENTES 20 // Define a capacidade máxima da mochila (tamanho do vetor).
+
+
+// Adiciona a API do Windows para mudar a página de código
+#ifdef _WIN32 
+#include <windows.h>
+#endif
+
+
+// Função que configura a codificação do console (específico para Windows)
+void set_utf8_console() {
+    // 1. Tenta configurar a localidade C padrão para UTF-8
+    setlocale(LC_ALL, "C.UTF-8");
+    
+    // 2. Se for Windows, força a página de código do console
+    #ifdef _WIN32
+        // 65001 é o identificador da página de código para UTF-8 no Windows
+        SetConsoleOutputCP(65001);
+    #endif
+}
+
 
 // ------------------- STRUCTS -------------------
 // Definição da estrutura Componente, que armazena os dados de cada item na mochila.
@@ -68,6 +90,7 @@ void printLinha(int wID, int wNome, int wTipo, int wPrioridade, int wQtd)
 // ------------------- MAIN -------------------
 int main()
 {
+    set_utf8_console();
     Componente mochila[MAX_COMPONENTES]; // Cria o vetor de structs para a mochila.
     int qtd = 0;                         // Inicializa a quantidade atual de componentes (índice do próximo item).
     int ordenado = 0;                    // Flag para indicar se a mochila está ordenada por nome (0 = Não, 1 = Sim).
