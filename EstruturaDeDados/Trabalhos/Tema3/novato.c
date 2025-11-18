@@ -1,7 +1,27 @@
 #include <stdio.h>  // Inclui a biblioteca padrão de entrada e saída (printf, scanf).
 #include <stdlib.h> // Inclui a biblioteca padrão (malloc, free, etc.).
 #include <time.h>   // Inclui a biblioteca para geração de números aleatórios (srand, time).
+#include <locale.h> 
 #define MAX 5       // Capacidade máxima da fila (tamanho fixo).
+
+
+// Adiciona a API do Windows para mudar a página de código
+#ifdef _WIN32 
+#include <windows.h>
+#endif
+
+// Função que configura a codificação do console (específico para Windows)
+void set_utf8_console() {
+    // 1. Tenta configurar a localidade C padrão para UTF-8
+    setlocale(LC_ALL, "C.UTF-8");
+    
+    // 2. Se for Windows, força a página de código do console
+    #ifdef _WIN32
+        // 65001 é o identificador da página de código para UTF-8 no Windows
+        SetConsoleOutputCP(65001);
+    #endif
+}
+
 // -------------------- Structs --------------------
 // Define a estrutura de uma peça do Tetris
 typedef struct
@@ -41,7 +61,7 @@ int inserir(Fila *f, Peca p)
 {
     if (filaCheia(f))
     {
-        printf("A fila está cheia! Não é possível inserir nova peça.\n");
+        printf(u8"A fila está cheia! Não é possível inserir nova peça.\n");
         return 0; // Inserção falhou.
     }
     f->itens[f->fim] = p; // Armazena a peça no índice do fim.
@@ -72,14 +92,14 @@ void mostrarFila(Fila *f)
 {
     if (filaVazia(f))
     {
-        printf("Fila vazia.\n");
+        printf(u8"Fila vazia.\n");
         return;
     }
     printf("Fila de peças: ");
     // Loop: percorre 'total' elementos a partir de 'inicio', usando aritmética modular.
     for (int i = 0, idx = f->inicio; i < f->total; i++, idx = (idx + 1) % MAX)
     {
-        printf("[%c %d] ", f->itens[idx].nome, f->itens[idx].id); // Imprime o tipo e o ID.
+        printf(u8"[%c %d] ", f->itens[idx].nome, f->itens[idx].id); // Imprime o tipo e o ID.
     }
     printf("\n");
 }
@@ -106,6 +126,7 @@ Peca gerarPeca(int id)
 // -------------------- Função principal --------------------
 int main()
 {
+    set_utf8_console();//chamando a funcao que resolve o problema de acentuação
     Fila fila;
     inicializarFila(&fila); // Inicializa a fila.
     srand(time(NULL));      // Inicializa a semente do gerador de números aleatórios com o tempo atual.

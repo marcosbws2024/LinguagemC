@@ -1,10 +1,30 @@
 #include <stdio.h>   // Inclui a biblioteca padrão de entrada e saída (para printf, scanf, etc.)
 #include <stdlib.h>  // Inclui a biblioteca padrão (para funções como system)
 #include <string.h>  // Inclui a biblioteca de manipulação de strings (para strcspn)
+#include <locale.h> // importan biblioteca pra resolver os acentos
+
+
+// Adiciona a API do Windows para mudar a página de código
+#ifdef _WIN32 
+#include <windows.h>
+#endif
 
 // --- Definições de Constantes ---
 #define MAX_TERRITORIO 5   // Define o número máximo de territórios que podem ser cadastrados
 #define TAM_STRING 100     // Define o tamanho máximo para as strings (nome e cor)
+
+
+// Função que configura a codificação do console (específico para Windows)
+void set_utf8_console() {
+    // 1. Tenta configurar a localidade C padrão para UTF-8
+    setlocale(LC_ALL, "C.UTF-8");
+    
+    // 2. Se for Windows, força a página de código do console
+    #ifdef _WIN32
+        // 65001 é o identificador da página de código para UTF-8 no Windows
+        SetConsoleOutputCP(65001);
+    #endif
+}
 
 // --- Estrutura de Dados ---
 // Define uma nova estrutura de dados chamada 'Territorio' para agrupar as informações
@@ -35,6 +55,9 @@ int main() {
     // Variável para armazenar a opção escolhida pelo usuário no menu.
     int opcao;
 
+    
+    set_utf8_console();
+
     // Inicia um loop 'do-while'. O código dentro do 'do' será executado pelo menos uma vez
     // e continuará a ser executado enquanto a condição do 'while' for verdadeira (opcao != 3).
     do {
@@ -53,7 +76,7 @@ int main() {
         
         // Limpa a tela do terminal. Nota: 'cls' é usado no Windows, 'clear' em sistemas Unix/Linux/macOS.
         // O código original usou "clear", assumindo um ambiente compatível com esse comando.
-        system("clear");
+        system("cls");
         
         // Limpa o buffer de entrada. Isso é crucial após o 'scanf("%d", ...)' 
         // para remover o '\n' que o usuário digitou, evitando problemas nas próximas leituras de strings.
@@ -62,7 +85,7 @@ int main() {
         // --- Tratamento da Opção (Switch-Case) ---
         switch (opcao) {
             case 1: // Opção: Cadastrar novo Território
-                printf("----Cadastro de Novo Território----\n\n");
+                printf(u8"----Cadastro de Novo Território----\n\n");
 
                 // Verifica se o limite máximo de territórios (MAX_TERRITORIO) foi atingido.
                 if (totalTerritorios < MAX_TERRITORIO) {

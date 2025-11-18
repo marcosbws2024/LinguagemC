@@ -2,10 +2,32 @@
 #include <stdlib.h> // Inclui a biblioteca padrão (malloc, calloc, free, rand, etc.)
 #include <string.h> // Inclui a biblioteca de manipulação de strings (strcspn, strcmp, strcpy, strstr)
 #include <time.h>   // Inclui a biblioteca de tempo (necessária para a função srand)
+#include <locale.h> // importan biblioteca pra resolver os acentos
 
 #define TAM_NOME 30    // Define o tamanho máximo para o nome do território.
 #define TAM_COR 10     // Define o tamanho máximo para o nome da cor do exército/jogador.
 #define TAM_MISSAO 100 // Define o tamanho máximo da string de missão.
+
+// Adiciona a API do Windows para mudar a página de código, nessa pré-compilação que vê se o windows 32bits
+// E decide se é essa biblioteca windows.h, pois o terminal muitas vezes ainda é do windows 32 para o mingw
+
+#ifdef _WIN32 
+#include <windows.h>
+#endif
+
+
+// Função que configura a codificação do console (específico para Windows)
+void set_utf8_console() {
+    // 1. Tenta configurar a localidade C padrão para UTF-8
+    setlocale(LC_ALL, "C.UTF-8");
+    
+    // 2. Se for Windows, força a página de código do console
+    #ifdef _WIN32
+        // 65001 é o identificador da página de código para UTF-8 no Windows
+        SetConsoleOutputCP(65001);
+    #endif
+}
+
 
 // Definição da estrutura Territorio
 typedef struct
@@ -212,6 +234,7 @@ void liberarMemoria(Territorio *mapa, Jogador *jogadores, int qtdJogadores)
 // ============================
 int main()
 {
+    set_utf8_console();
     srand(time(NULL)); // Inicializa a semente para a geração de números aleatórios (dados).
     int totalTerritorios = 0, maxTerritorios;
     printf("Quantos territórios deseja cadastrar?\n");
