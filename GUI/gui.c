@@ -1,46 +1,88 @@
-#include <gtk/gtk.h>
-//pacman -S mingw-w64-x86_64-gtk3
-// Função chamada quando o botão é clicado
-static void print_hello (GtkWidget *widget, gpointer data) {
-    g_print ("Olá, Mundo Gráfico!\n");
-}
+#include <raylib.h>
+#define RAYGUI_IMPLEMENTATION
+#include <raygui.h> // Inclui o módulo de interface gráfica (GUI)
 
-// Função chamada quando a janela principal é fechada
-static void activate (GtkApplication *app, gpointer user_data) {
-    GtkWidget *window;
-    GtkWidget *button;
+// ⚠️ Nota: Para compilar, você precisa ter a raylib instalada no seu sistema.
+// O comando de compilação é bem mais simples que o do GTK.
 
-    // 1. Cria a nova janela de nível superior
-    window = gtk_application_window_new (app);
-    gtk_window_set_title (GTK_WINDOW (window), "Tela de Cadastro Gráfica");
-    gtk_window_set_default_size (GTK_WINDOW (window), 200, 150);
+// Configurações da Janela
+#define SCREEN_WIDTH 450
+#define SCREEN_HEIGHT 300
 
-    // 2. Cria um botão
-    button = gtk_button_new_with_label ("Clique Aqui");
-    
-    // Conecta o sinal "clicado" do botão à função 'print_hello'
-    g_signal_connect (button, "clicked", G_CALLBACK (print_hello), NULL);
+// Buffer de Input
+#define MAX_INPUT_CHARS 50
 
-    // Adiciona o botão à janela
-    gtk_window_set_child (GTK_WINDOW (window), button);
+// Variáveis do Formulário
+char nomeText[MAX_INPUT_CHARS + 1] = "João Miguel";
+char idadeText[5] = "20";
+bool nomeEditMode = false;
+bool idadeEditMode = false;
 
-    // Exibe todos os widgets
-    gtk_widget_show (window);
-}
+// ----------------------------------------------------
+// FUNÇÃO PRINCIPAL
+// ----------------------------------------------------
+int main(void) {
+    // Inicialização
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Cadastro de Usuário com RayGUI");
+    SetTargetFPS(60); 
 
-int main (int argc, char **argv) {
-    GtkApplication *app;
-    int status;
+    // Define o estilo visual (opcional)
+    GuiLoadStyleDefault();
 
-    // Inicializa a aplicação GTK
-    app = gtk_application_new ("org.gtk.example", G_APPLICATION_DEFAULT_FLAGS);
-    
-    // Conecta a função 'activate' (onde a janela é criada) ao sinal "activate"
-    g_signal_connect (app, "activate", G_CALLBACK (activate), NULL);
-    
-    // Executa a aplicação
-    status = g_application_run (G_APPLICATION (app), argc, argv);
-    g_object_unref (app);
+    // Loop principal da aplicação
+    while (!WindowShouldClose()) {
+        // --- LÓGICA DE INPUT (PROCESSAMENTO) ---
+        
+        // Verifica se a tecla ENTER foi pressionada em algum campo de edição
+        if (IsKeyPressed(KEY_ENTER)) {
+            if (nomeEditMode) nomeEditMode = false;
+            else if (idadeEditMode) idadeEditMode = false;
+        }
 
-    return status;
+        // --- DESENHO (RENDERIZAÇÃO) ---
+
+        BeginDrawing();
+        ClearBackground(GetColor(GuiGetStyle(DEFAULT, BACKGROUND_COLOR))); // Fundo da Janela
+
+        // Define a área de layout centralizada
+        Rectangle layout = { 25, 25, SCREEN_WIDTH - 50, SCREEN_HEIGHT - 50 };
+
+        // Título
+        DrawText("Formulário de Cadastro", layout.x, layout.y - 15, 20, DARKGRAY);
+
+        // 1. Campo NOME (Label e Caixa de Texto)
+        GuiLabel((Rectangle){ layout.x, layout.y + 20, 80, 25 }, "Nome:");
+        
+        Rectangle nomeRect = { layout.x + 90, layout.y + 20, layout.width - 90, 25 };
+        
+        // Caixa de texto editável (o modo de edição é alterado pelo clique)
+        if (GuiTextBox(nomeRect, nomeText, MAX_INPUT_CHARS, nomeEditMode)) {
+            nomeEditMode = !nomeEditMode;
+        }
+
+        // 2. Campo IDADE (Label e Caixa de Texto)
+        GuiLabel((Rectangle){ layout.x, layout.y + 60, 80, 25 }, "Idade:");
+        
+        Rectangle idadeRect = { layout.x + 90, layout.y + 60, 50, 25 };
+        
+        if (GuiTextBox(idadeRect, idadeText, 4, idadeEditMode)) {
+            idadeEditMode = !idadeEditMode;
+        }
+        
+        // 3. Botão Salvar
+        Rectangle saveRect = { layout.x, layout.y + 120, layout.width, 30 };
+        if (GuiButton(saveRect, "Salvar Cadastro")) {
+            // Lógica de Salvar: Imprime os valores atuais
+            printf("\n--- DADOS DE CADASTRO (RayGUI) ---\n");
+            printf("Nome: %s\n", nomeText);
+            printf("Idade: %s\n", idadeText);
+            printf("----------------------------------\n");
+        }
+        
+        EndDrawing();
+    }
+
+    // Desinicialização
+    CloseWindow(); 
+    return 0;
 }
